@@ -1,20 +1,34 @@
+"use client"
 
 import axios from "axios";
+import { useState } from "react";
 
 export default function Register() {
-  const localLoginURL = process.env.LOCAL_LOGIN_URL;
-  const labels = ["hospital name", "email address", "password"]
+  const localLoginURL = "http://localhost:3000/hospital/account/create";
+  
+  const [hospitalNameValue, setHospitalName] = useState("");
+  const [hospitalEmailValue, setHospitalEmail] = useState("");
+  const [hospitalPasswordValue, setHospitalPassword] = useState("");
 
-  console.log(localLoginURL);
+  const labels = [
+    {label: "hospital name", inputvalue: hospitalNameValue},
+    {label: "email address", inputvalue: hospitalEmailValue},
+    {label: "password", inputvalue: hospitalPasswordValue},
+  ]
 
-  const handleRegister = async (hospitalEmailInput, hospitalPasswordInput) => {
+  console.log("hello world")
+
+  const handleRegister = async () => {
     const result = await axios({
-      method: "get",
+      method: "post",
       url: localLoginURL,
       responseType: "stream",
       data: {
-        hospitalEmail: hospitalEmailInput,
-        hospitalPassword: hospitalPasswordInput,
+        hospitalName: hospitalNameValue,
+        hospitalEmail: hospitalEmailValue,
+        hospitalPassword: hospitalPasswordValue,
+        hospitalLongitude: "34.0522",
+        hospitalLatitude: "-118.2437",
       },
     });
 
@@ -22,27 +36,44 @@ export default function Register() {
       console.log("login error");
     }
 
-    console.log(result);
+    console.log(result.data);
+
+    // console.log(hospitalNameValue)
+    // console.log(hospitalEmailValue)
+    // console.log(hospitalPasswordValue)
   };
 
-  const InputComponent = () => {
-    return (
-      <>
-      {labels.map((label, index) => (        
-        <div key={index} className="flex w-72 flex-col">
-          <label className="mb-2 text-xs text-black font-semibold size-4 capitalize w-full">{label}</label>
-          <input type="text" className="w-full mb-4 rounded-md bg-gray-200 h-12" />
-        </div>
-      ))}
-      </>
-    );
-  };
+  const handleHospitalNameChange = (event) => {
+    setHospitalName(event.target.value);
+  }
+
+  const handleHospitalEmailChange = (event) => {
+    setHospitalEmail(event.target.value);
+  }
+
+  const handleHospitalPasswordChange = (event) => {
+    setHospitalPassword(event.target.value);
+  }
+
   return <div className="flex flex-col w-full h-screen justify-center items-center">
     <div className=" border-2 border-slate-900 rounded-md p-12">
-      <InputComponent />
-      <h1 className="capitalize font-medium mt-2">already have account? Login</h1>
+      <div className="flex w-72 flex-col">
+          <label className="mb-2 text-xs text-black font-semibold size-4 capitalize w-full">{labels[0].label}</label>
+          <input type="text" className="w-full mb-4 rounded-md bg-gray-200 h-12 p-2" value={labels[0].inputvalue} onChange={handleHospitalNameChange}/>
+        </div>
+
+        <div className="flex w-72 flex-col">
+          <label className="mb-2 text-xs text-black font-semibold size-4 capitalize w-full">{labels[1].label}</label>
+          <input type="text" className="w-full mb-4 rounded-md bg-gray-200 h-12 p-2" value={labels[1].inputvalue} onChange={handleHospitalEmailChange}/>
+        </div>
+
+        <div className="flex w-72 flex-col">
+          <label className="mb-2 text-xs text-black font-semibold size-4 capitalize w-full">{labels[2].label}</label>
+          <input type="text" className="w-full mb-4 rounded-md bg-gray-200 h-12 p-2" value={labels[2].inputvalue} onChange={handleHospitalPasswordChange}/>
+        </div>
+      <a className="capitalize font-medium mt-2" href="/login">already have account? Login</a>
       <div className="w-full flex justify-end">
-        <button className="bg-slate-900 w-24 text-white rounded-md mt-12 p-2">Register</button>
+        <button className="bg-slate-900 w-24 text-white rounded-md mt-12 p-2" onClick={handleRegister}>Register</button>
       </div>
     </div>
 </div>
